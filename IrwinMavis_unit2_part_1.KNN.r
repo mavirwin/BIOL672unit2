@@ -1,4 +1,4 @@
-print("Assignment 2, Part 1")
+print("Assignment 2, Part 1, KNN")
 
 library("ggplot2")
 library("palmerpenguins")
@@ -72,7 +72,7 @@ print(length(sam.species)) #20...rows?
 
 #start knn function, with Species as integers for distance based algorithm 
 pred.knn = knn(thesample, penguin.data.int, sam.species, k=3, l = 0, prob = FALSE, use.all = TRUE)
-#mypred = predict(mytest, dataframe, probability = FALSE, decision.values = TRUE)
+#plot of thesample vs full data
 plot211 =ggplot(thesample, aes(CD, CL, colour = as.factor(Sp.int))) + geom_point()
 plot212 =ggplot(thesample, aes(FL, BM, colour = as.factor(Sp.int))) + geom_point()                                 
 plot213 =ggplot(sub.pen.data, aes(CD, CL, colour = as.factor(Sp.int))) + geom_point()
@@ -80,7 +80,7 @@ plot214 =ggplot(sub.pen.data, aes(FL, BM, colour = as.factor(Sp.int))) + geom_po
 theKNN = summary(pred.knn)
 print(theKNN) 
 
-
+#plot of knn 
 plot215 =ggplot(sub.pen.data, aes(CD, CL, colour = pred.knn)) + geom_point()                                 
 plot216 =ggplot(sub.pen.data, aes(FL, BM, colour = pred.knn)) + geom_point()                                 
 library('grid')
