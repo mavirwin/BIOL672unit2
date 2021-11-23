@@ -27,10 +27,12 @@ Sex=as.factor(data.na.out2$Sex)
 #species as integar with ID numbers
 Sp.int=data.na.out2$Sp.as.int
 print(data.na.out2$Sp.as.int)
+typeof(Sp.int)
 
 #species as factor, but are ID numbers
 Sp.int.fac=as.factor(data.na.out2$Sp.as.int)
 print(Sp.int.fac)
+
 
 #multvariance with Specie IDs as factor
 penguin.data=data.frame(
@@ -120,11 +122,21 @@ note2= cat("The set.seed(rnd) is on line 57.")
 #split the dataset into k groups, using the 5-fold cross-validation method
 #reference: https://www.geeksforgeeks.org/cross-validation-in-r-programming/
 
-
-training control with k=5
-train.con.bayes= trainControl(method="boot", number=5)
+#training control with k=5??
+train.con.bayes= trainControl(method="cv", number=10)
+print(train.con.bayes)
+#splitting
+split = 
+x= subset(penguin.data.int, select=-Sp.int, header= TRUE)
+print(x)
+y=Sp.int.fac
 
 #training the model 
+library("klaR")
+model.bayes= train(x,y, 
+                   method="nb", #native Bayes
+                   trControl= train.con.bayes)
+print(model.bayes)
 
 
 thesample = sample_n(penguin.data.int, 50, replace=FALSE)
