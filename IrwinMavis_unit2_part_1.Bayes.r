@@ -1,4 +1,4 @@
-print("Assignment 2, Part 1, KNN")
+print("Assignment 2, Part 1, bayes")
 
 library("ggplot2")
 library("palmerpenguins")
@@ -54,8 +54,8 @@ print(penguin.data)
 sub.pen.data=data.frame(CL,CD,FL,BM)  #categorical Variance not included
 print(sub.pen.data)
 
-#settings
-rnd = sample(1:150, 1)  #132L??
+#set the random shuffle of the dataframe
+rnd = sample(1:150, 1)  #132L
 set.seed(rnd)
 
 #naive Bayes, using the e1071 library
@@ -70,8 +70,79 @@ print(thespecies)
 test <-  naiveBayes(Sp.int~CD+CL+FL+BM, thesample, laplace = 0) # naive Bayes classifier
 pred.bayes <- predict(test, sub.pen.data, probability = FALSE, decision.values = TRUE)
 
+#plot of thesample vs full data with integer Species as factor
+plot211 =ggplot(thesample, aes(CD, CL, colour = as.factor(Sp.int))) + geom_point()
+plot212 =ggplot(thesample, aes(FL, BM, colour = as.factor(Sp.int))) + geom_point() 
+#plot of subset penguin data, which doesn't have species, but yet here's the integer Species as factor? 
+plot213 =ggplot(sub.pen.data, aes(CD, CL, colour = as.factor(Sp.int))) + geom_point()
+plot214 =ggplot(sub.pen.data, aes(FL, BM, colour = as.factor(Sp.int))) + geom_point()                                 
+#Bayes summary
+thebayes = summary(test) 
+
+print(thebayes) 
+
+#plot of subset of penguin data
+plot215 =ggplot(sub.pen.data, aes(CD, CL, colour = pred.bayes)) + geom_point()                                 
+plot216 =ggplot(sub.pen.data, aes(FL, BM, colour = pred.bayes)) + geom_point()                                 
+
+#print plots
+library('grid')
+pushViewport(viewport(layout = grid.layout(3, 2)))
+print(plot211, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(plot212, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+
+print(plot213, vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
+print(plot214, vp = viewport(layout.pos.row = 2, layout.pos.col = 2))
+
+print(plot215, vp = viewport(layout.pos.row = 3, layout.pos.col = 1))
+print(plot216, vp = viewport(layout.pos.row = 3, layout.pos.col = 2))
+
+# confusion matrix
+print(as.factor(as.integer(pred.bayes)))
+print(as.factor(Sp.int.fac))
+matrix.bayes = confusionMatrix(as.factor(as.integer(pred.bayes)), as.factor(Sp.int.fac))
+print(matrix.bayes)
+
+note1=cat("Comparing to KNN, the Bayes approach was able to discern between species 1 and 2 better.\n
+          Let's use bayes for the 5-groupings procedure.")
+
+#save results
+sink("unit2.1.bayes.txt")
+print(thesample)
+print(matrix.bayes)
+print(note1)
+sink()
+
+#Start the 5 grouping procedure
+#A--shuffle the dataset randomly--
+note2= cat("The set.seed(rnd) is on line 57.")
+
+#split the dataset into k groups, using the 5-fold cross-validation method
+#reference: https://www.geeksforgeeks.org/cross-validation-in-r-programming/
 
 
+training control with k=5
+train.con.bayes= trainControl(method="boot", number=5)
+
+#training the model 
+
+
+thesample = sample_n(penguin.data.int, 50, replace=FALSE)
+print(thesample)
+
+thespecies = thesample[5:5]
+print(thespecies)
+#start naivebayes function, with species as integers
+test <-  naiveBayes(Sp.int~CD+CL+FL+BM, thesample, laplace = 0) # naive Bayes classifier
+pred.bayes <- predict(test, sub.pen.data, probability = FALSE, decision.values = TRUE)
+
+
+
+#B--Split the dataset into 5 groups
+
+#5-fold cross validation by random subsetting into 5 groups
+
+#split into k=5 groups. 
 
 
 
