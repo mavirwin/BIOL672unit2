@@ -18,10 +18,10 @@ data.na.out2=na.omit(data.int)
 #listing of columns
 Sp=as.factor(data.na.out2$Species) #using names
 Is=as.factor(data.na.out2$Island)
-CL=data.na.out2$Culmen.Length..mm.
-CD=data.na.out2$Culmen.Depth..mm.
-FL= data.na.out2$Flipper.Length..mm.
-BM= data.na.out2$Body.Mass..g.
+CL=as.integer(data.na.out2$Culmen.Length..mm.)
+CD=as.integer(data.na.out2$Culmen.Depth..mm.)
+FL= as.integer(data.na.out2$Flipper.Length..mm.)
+BM= as.integer(data.na.out2$Body.Mass..g.)
 Sex=as.factor(data.na.out2$Sex)
 
 #species as integar with ID numbers
@@ -124,37 +124,30 @@ note2= cat("The set.seed(rnd) is on line 57.")
 
 #training control with k=5??
 train.con.bayes= trainControl(method="cv", number=10)
-print(train.con.bayes)
+#print(train.con.bayes)
 #splitting
-split = 
-x= subset(penguin.data.int, select=-Sp.int, header= TRUE)
-print(x)
-y=Sp.int.fac
+#split = 
+random.select=createDataPartition(penguin.data.int$Sp.int, p=0.2, list= FALSE)
+#create train set
+train.set.bayes= penguin.data.int[random.select,]
+#x1= subset(penguin.data.int, select=-Sp.int, header= TRUE)
+x2=subset(train.set.bayes, select=-Sp.int, header=TRUE)
+print(x1)
+typeof(x1)
+print(x2)
+typeof(x2)
+y=as.factor(train.set.bayes$Sp.int)
 
 #training the model 
 library("klaR")
-model.bayes= train(x,y, 
+model.bayes= train(x2,y, 
                    method="nb", #native Bayes
                    trControl= train.con.bayes)
 print(model.bayes)
 
 
-thesample = sample_n(penguin.data.int, 50, replace=FALSE)
-print(thesample)
-
-thespecies = thesample[5:5]
-print(thespecies)
-#start naivebayes function, with species as integers
-test <-  naiveBayes(Sp.int~CD+CL+FL+BM, thesample, laplace = 0) # naive Bayes classifier
-pred.bayes <- predict(test, sub.pen.data, probability = FALSE, decision.values = TRUE)
 
 
-
-#B--Split the dataset into 5 groups
-
-#5-fold cross validation by random subsetting into 5 groups
-
-#split into k=5 groups. 
 
 
 
