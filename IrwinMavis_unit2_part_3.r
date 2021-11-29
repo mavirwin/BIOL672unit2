@@ -1,5 +1,4 @@
-print("Assignment 2, Part 2, kernalSVM")
-cat("Compare support vector machine methods for classification.")
+print("Assignment 2, Part 3, neural network")
 
 library("ggplot2")
 library("palmerpenguins")
@@ -109,14 +108,11 @@ matrix.svm = confusionMatrix(as.factor(pred.svm), as.factor(Sp.int.fac))
 print(matrix.svm)
 
 #save summary
-sink("C:/Users/Videosystem/Documents/GitHub/BIOL672unit2/kernal.polydot.txt")
-print(matrix.svm)
+sink("C:/Users/Videosystem/Documents/GitHub/BIOL672unit2/")
+print()
 sink()
 
 
-note1=cat("Did three kernal functions. Which available methods are most ideal for the bird data?\n
-          polydot and vanilladot appears to have exact same results. Vanilladot failed to plot. Something is \n
-          probably wrong with vanillabot? Either way, of what is available for review, plotdot's SVM \n
-          summary suggested that this method can be the most ideal one.")
+note1=cat("")
 
-#liquidSVM is unavailable
+
