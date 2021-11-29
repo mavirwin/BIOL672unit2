@@ -122,26 +122,31 @@ note2= cat("The set.seed(rnd) is on line 57.")
 #split the dataset into k groups, using the 5-fold cross-validation method
 #reference: https://www.geeksforgeeks.org/cross-validation-in-r-programming/
 
-#make five subset groups of 5-fold cross validation by random sampling
+#make 5-fold cross validation by random sampling
 #train.con.bayes= trainControl(method="nb", number=5) #"nb" is not a recognized resampling method? 
-
 train.con.bayes= trainControl(method="cv", number=5) 
 print(train.con.bayes)
-#splitting, using 20% of dataset (p=0.2)
-random.select=createDataPartition(penguin.data.int$Sp.int, p=0.2, list= FALSE)
-print(random.select)
-#hold out one group from five
-#create train set from four groups
-train.set.bayes= penguin.data.int[random.select,]
+#create four groups of temporary train sets using 20% of dataset (p=0.2)
+sub.train <- 1
+for (sub.train in 1:4)
+{
+  random.select=createDataPartition(penguin.data.int$Sp.int, p=0.2, list= FALSE)
+  sub.train= penguin.data.int[random.select,]
+  sub.train.group <-rename(sub.train + 1)
+  
+  sub.train <- sub.train + 1
+}
+
 #create testing set
-test.set.bayes= penguin.data.int[-random.select,]
+sub.test= penguin.data.int[-random.select,]
 #x1= subset(penguin.data.int, select=-Sp.int, header= TRUE)
-x2=subset(train.set.bayes, select=-Sp.int, header=TRUE)
+#x2=subset(train.set.bayes, select=-Sp.int, header=TRUE)
+x2=sub.test, select=-Sp.int, header=TRUE
 #print(x1)
 #typeof(x1)
 print(x2)
 #typeof(x2)
-y=as.factor(train.set.bayes$Sp.int)
+y=as.factor(sub.test$Sp.int)
 
 #training the model 
 library("klaR")

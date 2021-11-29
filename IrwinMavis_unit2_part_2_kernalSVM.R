@@ -1,10 +1,14 @@
-print("Assignment 2, Part 1, bayes")
+print("Assignment 2, Part 2, kernalSVM")
+cat("Compare support vector machine methods for classification.")
 
 library("ggplot2")
 library("palmerpenguins")
 library("dplyr")
 library("caret")
-library("class")
+#library("class")
+library("e1071")
+library("kernlab")
+#library("liquidSVM") #this package is obsolete
 
 data=read.csv("https://raw.githubusercontent.com/netuohcs/BiBC_essentials_20200916/master/data/penguins_lter.csv")
 data.int=read.csv("https://raw.githubusercontent.com/mavirwin/raw-data/main/penguins_lter.integer.csv")
@@ -57,35 +61,32 @@ sub.pen.data=data.frame(CL,CD,FL,BM)  #categorical Variance not included
 print(sub.pen.data)
 
 #set the random shuffle of the dataframe
-rnd = sample(1:330, 1)  #132L
+rnd = sample(1:330, 1)  
 set.seed(rnd)
 
-#naive Bayes, using the e1071 library
-library("e1071")
-
-thesample = sample_n(penguin.data.int, 50, replace=FALSE)
+thesample = sample_n(penguin.data.int, 80, replace=FALSE) 
 print(thesample)
-
-thespecies = thesample[5:5]
+thespecies= thesample[5:5]
 print(thespecies)
-#start naivebayes function, with species as integers
-test <-  naiveBayes(Sp.int~CD+CL+FL+BM, thesample, laplace = 0) # naive Bayes classifier
-pred.bayes <- predict(test, sub.pen.data, probability = FALSE, decision.values = TRUE)
 
+#start the kernel tunings of the support vector machine 
+svmtest = ksvm(as.matrix(thesample), thespecies, kernel= 'polydot') # tuned polynomial kernel
+# svmtest = ksvm(as.matrix(thesample), thespecies, kernel= 'vanilladot') # tuned linear kernel
+# svmtest = ksvm(as.matrix(thesample), thespecies, kernel= 'rbfdot') # tuned radial basis function
+pred.svm = predict(svmtest, thesample, type='response')
 #plot of thesample vs full data with integer Species as factor
 plot211 =ggplot(thesample, aes(CD, CL, colour = as.factor(Sp.int))) + geom_point()
 plot212 =ggplot(thesample, aes(FL, BM, colour = as.factor(Sp.int))) + geom_point() 
 #plot of subset penguin data, which doesn't have species, but yet here's the integer Species as factor? 
 plot213 =ggplot(sub.pen.data, aes(CD, CL, colour = as.factor(Sp.int))) + geom_point()
 plot214 =ggplot(sub.pen.data, aes(FL, BM, colour = as.factor(Sp.int))) + geom_point()                                 
-#Bayes summary
-thebayes = summary(test) 
 
-print(thebayes) 
+theSVM = summary(svmtest) 
+print(theSVM) 
 
 #plot of subset of penguin data
-plot215 =ggplot(sub.pen.data, aes(CD, CL, colour = pred.bayes)) + geom_point()                                 
-plot216 =ggplot(sub.pen.data, aes(FL, BM, colour = pred.bayes)) + geom_point()                                 
+plot215 =ggplot(sub.pen.data, aes(CD, CL, colour = pred.svm)) + geom_point()                                 
+plot216 =ggplot(sub.pen.data, aes(FL, BM, colour = pred.svm)) + geom_point()                                 
 
 #print plots
 library('grid')
@@ -98,63 +99,12 @@ print(plot214, vp = viewport(layout.pos.row = 2, layout.pos.col = 2))
 
 print(plot215, vp = viewport(layout.pos.row = 3, layout.pos.col = 1))
 print(plot216, vp = viewport(layout.pos.row = 3, layout.pos.col = 2))
-
 # confusion matrix
-print(as.factor(as.integer(pred.bayes)))
+pred.svm= round(pred.svm) #round to integer
+print(as.factor(pred.svm))
 print(as.factor(Sp.int.fac))
-matrix.bayes = confusionMatrix(as.factor(as.integer(pred.bayes)), as.factor(Sp.int.fac))
-print(matrix.bayes)
 
-note1=cat("Comparing to KNN, the Bayes approach was able to discern between species 1 and 2 better.\n
-          Let's use bayes for the 5-groupings procedure.")
+matrix.svm = confusionMatrix(as.factor(pred.svm), as.factor(Sp.int.fac))
+print(matrix.svm)
 
-#save results
-sink("unit2.1.bayes.txt")
-print(thesample)
-print(matrix.bayes)
-print(note1)
-sink()
-
-#Start the 5 grouping procedure
-#A--shuffle the dataset randomly--
-note2= cat("The set.seed(rnd) is on line 57.")
-
-#split the dataset into k groups, using the 5-fold cross-validation method
-#reference: https://www.geeksforgeeks.org/cross-validation-in-r-programming/
-
-#make five subset groups of 5-fold cross validation by random sampling
-#train.con.bayes= trainControl(method="nb", number=5) #"nb" is not a recognized resampling method? 
-
-train.con.bayes= trainControl(method="cv", number=5) 
-print(train.con.bayes)
-#splitting, using 20% of dataset (p=0.2)
-random.select=createDataPartition(penguin.data.int$Sp.int, p=0.2, list= FALSE)
-print(random.select)
-#hold out one group from five
-#create train set from four groups
-train.set.bayes= penguin.data.int[random.select,]
-#create testing set
-test.set.bayes= penguin.data.int[-random.select,]
-#x1= subset(penguin.data.int, select=-Sp.int, header= TRUE)
-x2=subset(train.set.bayes, select=-Sp.int, header=TRUE)
-#print(x1)
-#typeof(x1)
-print(x2)
-#typeof(x2)
-y=as.factor(train.set.bayes$Sp.int)
-
-#training the model 
-library("klaR")
-model.bayes= train(x2,y, 
-                   method="nb", #native Bayes
-                   trControl= train.con.bayes)
-print(model.bayes)
-
-
-
-
-
-
-
-
-
+cat("Did three kernal functions. Which available methods are most ideal for the bird data?")
