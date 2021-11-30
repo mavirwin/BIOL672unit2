@@ -124,15 +124,17 @@ note2= cat("The set.seed(rnd) is on line 57.")
 
 #make 5-fold cross validation by random sampling
 #train.con.bayes= trainControl(method="nb", number=5) #"nb" is not a recognized resampling method? 
-train.con.bayes= trainControl(method="cv", number=5) 
+train.con.bayes= trainControl(method="cv", number=5, repeats=5) 
 print(train.con.bayes)
+
+
 #create four groups of temporary train sets using 20% of dataset (p=0.2)
 sub.train <- 1
 for (sub.train in 1:4)
 {
-  random.select=createDataPartition(penguin.data.int$Sp.int, p=0.2, list= FALSE)
+  random.select=createDataPartition(penguin.data.int$Sp.int, p=0.2, list= TRUE)
   sub.train= penguin.data.int[random.select,]
-  sub.train.group <-rename(sub.train ?????????)
+  sub.train.group <-rename(sub.train ???????????)
   
   sub.train <- sub.train + 1
 }
