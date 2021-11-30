@@ -128,34 +128,35 @@ train.con.bayes= trainControl(method="cv", number=5, repeats=5)
 print(train.con.bayes)
 
 
-#create four groups of temporary train sets using 20% of dataset (p=0.2)
-sub.train <- 1
-for (sub.train in 1:4)
-{
-  random.select=createDataPartition(penguin.data.int$Sp.int, p=0.2, list= TRUE)
-  sub.train= penguin.data.int[random.select,]
-  sub.train.group <-rename(sub.train ???????????)
-  
-  sub.train <- sub.train + 1
-}
 
-#create testing set
-sub.test= penguin.data.int[-random.select,]
-#x1= subset(penguin.data.int, select=-Sp.int, header= TRUE)
-#x2=subset(train.set.bayes, select=-Sp.int, header=TRUE)
-x2=sub.test, select=-Sp.int, header=TRUE
-#print(x1)
-#typeof(x1)
-print(x2)
-#typeof(x2)
-y=as.factor(sub.test$Sp.int)
-
-#training the model 
-library("klaR")
-model.bayes= train(x2,y, 
-                   method="nb", #native Bayes
-                   trControl= train.con.bayes)
-print(model.bayes)
+# #create four groups of temporary train sets using 20% of dataset (p=0.2)
+# sub.train <- 1
+# for (sub.train in 1:4)
+# {
+#   random.select=createDataPartition(penguin.data.int$Sp.int, p=0.2, list= TRUE)
+#   sub.train= penguin.data.int[random.select,]
+#   sub.train.group <-rename(sub.train
+#   
+#   sub.train <- sub.train + 1
+# }
+# 
+# #create testing set
+# sub.test= penguin.data.int[-random.select,]
+# #x1= subset(penguin.data.int, select=-Sp.int, header= TRUE)
+# #x2=subset(train.set.bayes, select=-Sp.int, header=TRUE)
+# x2=sub.test, select=-Sp.int, header=TRUE
+# #print(x1)
+# #typeof(x1)
+# print(x2)
+# #typeof(x2)
+# y=as.factor(sub.test$Sp.int)
+# 
+# #training the model 
+# library("klaR")
+# model.bayes= train(x2,y, 
+#                    method="nb", #native Bayes
+#                    trControl= train.con.bayes)
+# print(model.bayes)
 
 
 

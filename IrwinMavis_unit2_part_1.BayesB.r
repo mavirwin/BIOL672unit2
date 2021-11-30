@@ -127,14 +127,14 @@ note2= cat("The set.seed(rnd) is on line 57.")
 train.con.bayes= trainControl(method="cv", number=5) 
 print(train.con.bayes)
 #create four groups of temporary train sets using 20% of dataset (p=0.2)
-sub.train <- 1
+#sub.train <- 1
 for (sub.train in 1:4)
 {
   random.select=createDataPartition(penguin.data.int$Sp.int, p=0.2, list= FALSE)
   sub.train= penguin.data.int[random.select,]
-  sub.train.group <-rename(sub.train ?????????)
+  #sub.train.group <-rename(sub.train ?????????)
   
-  sub.train <- sub.train + 1
+  #sub.train <- sub.train + 1
 }
 
 #create testing set
