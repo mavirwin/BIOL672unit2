@@ -126,9 +126,24 @@ note2= cat("The set.seed(rnd) is on line 57.")
 groups=createFolds(penguin.data.int$Sp.int, k=5)
 View(groups)
 
+#Training data
+#check the process
+test.group= penguin.data.int[groups$Fold1, ]
+str(test.group)
 
+# loop for four dataset for training
+for group in groups
+{
+  test.group= penguin.data.int[groups$Fold1, ]
+  train.group = penguin.data.int[-groups$Fold1, ]
+  print(test.group)
+  print(train.group)
+  
+  #add scores tothe results array
+  results= [ ]
+}
 
-
+#summary 
 
 #train.con.bayes= trainControl(method="nb", number=5) #"nb" is not a recognized resampling method? 
 # train.con.bayes= trainControl(method="cv", number=5, repeats=5) 
