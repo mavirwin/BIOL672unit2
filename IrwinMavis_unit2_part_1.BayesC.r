@@ -123,9 +123,16 @@ note2= cat("The set.seed(rnd) is on line 57.")
 #reference: https://www.geeksforgeeks.org/cross-validation-in-r-programming/
 
 #make 5-fold cross validation by random sampling
+groups=createFolds(penguin.data.int$Sp.int, k=5)
+View(groups)
+
+
+
+
+
 #train.con.bayes= trainControl(method="nb", number=5) #"nb" is not a recognized resampling method? 
-train.con.bayes= trainControl(method="cv", number=5, repeats=5) 
-print(train.con.bayes)
+# train.con.bayes= trainControl(method="cv", number=5, repeats=5) 
+# print(train.con.bayes)
 
 
 
