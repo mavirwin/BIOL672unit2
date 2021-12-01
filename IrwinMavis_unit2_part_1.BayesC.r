@@ -121,64 +121,62 @@ note2= cat("The set.seed(rnd) is on line 57.")
 
 #split the dataset into k groups, using the 5-fold cross-validation method
 #reference: https://www.geeksforgeeks.org/cross-validation-in-r-programming/
+#better reference: https://www.journaldev.com/46754/k-fold-cross-validation-in-r
 
 #make 5-fold cross validation by random sampling
 groups=createFolds(penguin.data.int$Sp.int, k=5)
 View(groups)
+#Use to store results
+results <- c() 
 
-#Training data
-#check the process
-test.group= penguin.data.int[groups$Fold1, ]
-str(test.group)
-
-# loop for four dataset for training
-for group in groups
+# loop for four of five unique datasets as train.group with first one (Fold1) selected as test.group
+for (Fold1 in groups)
 {
+  #get the test data from the current group
   test.group= penguin.data.int[groups$Fold1, ]
   train.group = penguin.data.int[-groups$Fold1, ]
-  print(test.group)
-  print(train.group)
+  str(test.group)
+  str(train.group)
   
-  #add scores tothe results array
-  results= [ ]
+  #add scores to the results array...what scores???
+  #results <- c(results, ) 
 }
 
-#summary 
+# train.con= trainControl(method="cv") #cv means cross validation
+# print(train.con)
 
-#train.con.bayes= trainControl(method="nb", number=5) #"nb" is not a recognized resampling method? 
-# train.con.bayes= trainControl(method="cv", number=5, repeats=5) 
-# print(train.con.bayes)
+train.con= trainControl(method="LOOCV") #loocv for leave one out cross validation
+print(train.con)
 
+x1=subset(test.group, select= -Sp.int, header=TRUE)
+x2=subset(train.group, select= -Sp.int, header=TRUE)
+#x1=subset(test.group, select= c(-Sp.int,-CL,-CD,-BM), header=TRUE) #tried with one variance
+#x2=subset(train.group, select= c(-Sp.int,-CL,-CD,-BM), header=TRUE)
+head(x1)
+typeof(x1)
+head(x2)
+typeof(x2)
+y1=as.factor(train.group$Sp.int)
+y2=as.factor(train.group$Sp.int)
 
+#training the model (also tried knn)
+library("klaR")
+model.bayes= train(x2,y2,
+                   method="nb", #native Bayes (tried lm with one variance (FL), but got the error: "wrong model type for classification")
+                   trControl= train.con)
+print(model.bayes) #appears to not progress right. Is this evaluation code not for multivariances? 
 
-# #create four groups of temporary train sets using 20% of dataset (p=0.2)
-# sub.train <- 1
-# for (sub.train in 1:4)
-# {
-#   random.select=createDataPartition(penguin.data.int$Sp.int, p=0.2, list= TRUE)
-#   sub.train= penguin.data.int[random.select,]
-#   sub.train.group <-rename(sub.train
-#   
-#   sub.train <- sub.train + 1
-# }
-# 
-# #create testing set
-# sub.test= penguin.data.int[-random.select,]
-# #x1= subset(penguin.data.int, select=-Sp.int, header= TRUE)
-# #x2=subset(train.set.bayes, select=-Sp.int, header=TRUE)
-# x2=sub.test, select=-Sp.int, header=TRUE
-# #print(x1)
-# #typeof(x1)
-# print(x2)
-# #typeof(x2)
-# y=as.factor(sub.test$Sp.int)
-# 
-# #training the model 
-# library("klaR")
-# model.bayes= train(x2,y, 
-#                    method="nb", #native Bayes
-#                    trControl= train.con.bayes)
-# print(model.bayes)
+#test model
+test.bayes= predict(model.bayes, x1)
+print(test.bayes) #fix warnings in model.bayes first, and may need y1 as factor for species?
+
+#performance of one variance with 
+#R2 for R-squared, 
+#RMSE for Root Mean Squared Error, 
+#MAE for Mean Absolute Error
+this.FL= data.frame(R2=R2(x1, x1$FL),
+                    RMSE=RMSE(y1, x1$FL),
+                    MAE=MAE(y1, x1$FL)) #fix errors above first
 
 
 
