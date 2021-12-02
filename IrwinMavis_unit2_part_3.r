@@ -7,7 +7,10 @@ library("caret")
 #library("class")
 library("e1071")
 library("kernlab")
-#library("liquidSVM") #this package is obsolete
+library("neuralnet")
+library("keras")
+library("tensorflow")
+
 
 data=read.csv("https://raw.githubusercontent.com/netuohcs/BiBC_essentials_20200916/master/data/penguins_lter.csv")
 data.int=read.csv("https://raw.githubusercontent.com/mavirwin/raw-data/main/penguins_lter.integer.csv")
@@ -68,51 +71,53 @@ print(thesample)
 thespecies= thesample[1:1]
 print(thespecies)
 
-#start the kernel tunings of the support vector machine 
-svmtest = ksvm(as.matrix(thesample), thespecies, kernel= 'polydot') # tuned polynomial kernel
-svmtest = ksvm(as.matrix(thesample), thespecies, kernel= 'vanilladot') # tuned linear kernel
-svmtest = ksvm(as.matrix(thesample), thespecies, kernel= 'rbfdot') # tuned radial basis function
-pred.svm = predict(svmtest, penguin.data.int, type='response')
-print(pred.svm)
-#plot of thesample vs full data with integer Species as factor
-plot211 =ggplot(thesample, aes(CD, CL, colour = as.factor(Sp.int))) + geom_point()
-plot212 =ggplot(thesample, aes(FL, BM, colour = as.factor(Sp.int))) + geom_point() 
-#plot of subset penguin data, which doesn't have species, but yet here's the integer Species as factor? 
-plot213 =ggplot(sub.pen.data, aes(CD, CL, colour = as.factor(Sp.int))) + geom_point()
-plot214 =ggplot(sub.pen.data, aes(FL, BM, colour = as.factor(Sp.int))) + geom_point()                                 
+#run neural network classifier
+thetest = neuralnet(Sp.int~CL+CD+FL+BM, thesample, hidden = 3, linear.output = FALSE)
+print(thetest)
+print(plot(thetest))
+thepred = predict(thetest, sub.pen.data, rep=1, all.units = FALSE)
+print(round(thepred))
 
-theSVM = summary(svmtest) 
-print(theSVM) 
+#return column with maximum value
+library(data.table)
+print(max.col(thepred)) 
+
+#plot of thesample vs full data with integer Species as factor
+plot231 =ggplot(thesample, aes(CD, CL, colour = as.factor(Sp.int))) + geom_point()
+plot232 =ggplot(thesample, aes(FL, BM, colour = as.factor(Sp.int))) + geom_point() 
+#plot of subset penguin data, which doesn't have species, but yet here's the integer Species as factor? 
+plot233 =ggplot(sub.pen.data, aes(CD, CL, colour = as.factor(Sp.int))) + geom_point()
+plot234 =ggplot(sub.pen.data, aes(FL, BM, colour = as.factor(Sp.int))) + geom_point()                                 
 
 #plot of subset of penguin data
-plot215 =ggplot(sub.pen.data, aes(CD, CL, colour = pred.svm)) + geom_point()                                 
-plot216 =ggplot(sub.pen.data, aes(FL, BM, colour = pred.svm)) + geom_point()                                 
+plot235 =ggplot(sub.pen.data, aes(CD, CL, colour = max.col(thepred))) + geom_point()                                 
+plot236 =ggplot(sub.pen.data, aes(FL, BM, colour = max.col(thepred))) + geom_point()                                 
 
 #print plots
 library('grid')
 pushViewport(viewport(layout = grid.layout(3, 2)))
-print(plot211, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
-print(plot212, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+print(plot231, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(plot232, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
 
-print(plot213, vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
-print(plot214, vp = viewport(layout.pos.row = 2, layout.pos.col = 2))
+print(plot233, vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
+print(plot234, vp = viewport(layout.pos.row = 2, layout.pos.col = 2))
 
-print(plot215, vp = viewport(layout.pos.row = 3, layout.pos.col = 1))
-print(plot216, vp = viewport(layout.pos.row = 3, layout.pos.col = 2))
+print(plot235, vp = viewport(layout.pos.row = 3, layout.pos.col = 1))
+print(plot236, vp = viewport(layout.pos.row = 3, layout.pos.col = 2))
 # confusion matrix
-pred.svm= round(pred.svm) #round to integer
-# print(as.factor(pred.svm))
-# print(as.factor(Sp.int.fac))
+print(max.col(thepred))
+print(as.integer(Sp))
+thematrix = confusionMatrix(as.factor(max.col(thepred)), as.factor(as.integer(Sp)))
+print(thematrix)
+print(plot(thetest))
 
-matrix.svm = confusionMatrix(as.factor(pred.svm), as.factor(Sp.int.fac))
-print(matrix.svm)
+note1=cat("I am not sure if the max.col results are supposed to be all 1 or not.")
 
 #save summary
-sink("C:/Users/Videosystem/Documents/GitHub/BIOL672unit2/")
-print()
+sink("C:/Users/Videosystem/Documents/GitHub/BIOL672unit2/simple.neural.net.txt")
+print(thematrix)
 sink()
 
 
-note1=cat("")
 
 
