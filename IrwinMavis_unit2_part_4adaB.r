@@ -16,24 +16,26 @@ getwd()
 #remove NA observations
 data.na.out2=na.omit(data.int)
 
+#reduce dataframe to two species for adaboost
+twospecies=data.na.out2[data.na.out2$Sp.as.int !=2, ]
+
 #listing of columns
-Sp=as.factor(data.na.out2$Species) #using names
-Is=as.factor(data.na.out2$Island)
-CL=as.integer(data.na.out2$Culmen.Length..mm.)
-CD=as.integer(data.na.out2$Culmen.Depth..mm.)
-FL= as.integer(data.na.out2$Flipper.Length..mm.)
-BM= as.integer(data.na.out2$Body.Mass..g.)
-Sex=as.factor(data.na.out2$Sex)
+Sp=as.factor(twospecies$Species) #using names
+Is=as.factor(twospecies$Island)
+CL=as.integer(twospecies$Culmen.Length..mm.)
+CD=as.integer(twospecies$Culmen.Depth..mm.)
+FL= as.integer(twospecies$Flipper.Length..mm.)
+BM= as.integer(twospecies$Body.Mass..g.)
+Sex=as.factor(twospecies$Sex)
 
 #species as integar with ID numbers
-Sp.int=data.na.out2$Sp.as.int
-print(data.na.out2$Sp.as.int)
+Sp.int=twospecies$Sp.as.int
+print(twospecies$Sp.as.int)
 typeof(Sp.int)
 
 #species as factor, but are ID numbers
-Sp.int.fac=as.factor(data.na.out2$Sp.as.int)
+Sp.int.fac=as.factor(twospecies$Sp.as.int)
 print(Sp.int.fac)
-
 
 #multvariance with Specie IDs as factor
 penguin.data=data.frame(
@@ -63,15 +65,16 @@ set.seed(rnd)
 
 thesample = sample_n(penguin.data.int, 80, replace=FALSE) 
 print(thesample)
-thespecies= thesample[5:5]
+thespecies= thesample[1:1]
 print(thespecies)
 
-#adaptive boosting classifier
-#install.packages("rpart")
-library("rpart")
 
-thetest = boosting(Sp.int~CD+CL+FL+BM, thesample, boos=TRUE)
-thepred= predict.bagging(thetest, data=sub.pen.data)
+#adaptive boosting classifier
+#adaboost is a binary classifier, so I narrowed the data down to CD and the error message is telling me: 
+#"Currently this procedure can not directly handle > 2 class response"
+
+thetest = ada(Sp.int~CD+CL+FL+BM,thesample)
+thepred= predict(thetest,sub.pen.data, probability = FALSE, decision.values = TRUE)
 theada = summary(thetest)
 print(theada)
 
@@ -105,4 +108,10 @@ print(as.factor(Sp.int.fac))
 thematrix = confusionMatrix(as.factor(thepred), as.factor(Sp.int.fac))
 print(thematrix)
 
-note1=cat("")
+note1=cat("adaboost is a binary classifier, so I narrowed to two species which ID numbers \n 
+were 1 and 3, partly because they are statistically significant than species 1 vs 2.")
+
+#save summary
+sink("C:/Users/Videosystem/Documents/GitHub/BIOL672unit2/adaboost1vs3.txt")
+print(thematrix)
+sink()

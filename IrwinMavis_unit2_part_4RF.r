@@ -62,7 +62,7 @@ set.seed(rnd)
 
 thesample = sample_n(penguin.data.int, 80, replace=FALSE) 
 print(thesample)
-thespecies= thesample[5:5]
+thespecies= thesample[1:1]
 print(thespecies)
 
 #random forest classifier
@@ -102,3 +102,8 @@ thematrix = confusionMatrix(as.factor(thepred), as.factor(Sp.int.fac))
 print(thematrix)
 
 note1=cat("")
+
+#save summary
+sink("C:/Users/Videosystem/Documents/GitHub/BIOL672unit2/randonforest.txt")
+print(thematrix)
+sink()
