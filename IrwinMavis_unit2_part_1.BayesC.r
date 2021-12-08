@@ -160,7 +160,7 @@ y1=as.factor(train.group$Sp.int)
 y2=as.factor(train.group$Sp.int)
 
 #training the model (also tried knn)
-library("klaR")
+library("klaR") #this package was suggested for splitting the native bayes thing
 model.bayes= train(x2,y2,
                    method="nb", #native Bayes (tried lm with one variance (FL), but got the error: "wrong model type for classification")
                    trControl= train.con)
@@ -177,6 +177,16 @@ print(test.bayes) #fix warnings in model.bayes first, and may need y1 as factor 
 this.FL= data.frame(R2=R2(x1, x1$FL),
                     RMSE=RMSE(y1, x1$FL),
                     MAE=MAE(y1, x1$FL)) #fix errors above first
+
+note1=cat("The assignment's results are difficult to accept as correct at face value because the\n
+packages we use are hiding too much work. I wanted to see all of the steps toward\n
+          the answers, like math teachers wanting their students to show their \n 
+          math work. Well, I am not happy with this one, but if I did complete the \n 
+          assignment, this shall be so for now. What I desire to \n
+          see and show isn't a requirment. \n 
+          
+          But I would like to round back to this again with fresh mind later. \n
+          I want to better understand what is going on (and practice while at that!)")
 
 
 
